@@ -46,7 +46,7 @@ for(k in 1:5){
   set.seed(2021)
   fit.pre = MCMCglmm(cbind(sao2_norm, temp_norm, pulse_norm) ~
                        -1 + trait + trait:(ns(interval,Boundary.knots = c(0,20), knots = c(1,3,6)) +
-                                             resp_bl + temp_bl + pulse_bl + sao2fio2_bl +
+                                             resp_bl + temp_bl + pulse_bl + sao2fio2_bl + #understand what these values are compared to the Y's
                                              crp_bl + alc_bl + dd_bl + gfr_bl +
                                              charlson_cat + demo5 + sex + bmi_cat +
                                              smoking),
@@ -102,6 +102,7 @@ for(k in 1:5){
     mutate(slope_sao2 = (prev1_sao2-prev2_sao2)/(prev1_interval-prev2_interval),
            slope_temp = (prev1_temp-prev2_temp)/(prev1_interval-prev2_interval),
            slope_pulse = (prev1_pulse-prev2_pulse)/(prev1_interval-prev2_interval))
+  # ran code and then saved it to .Rds
   # mult.pre <- multinom(factor(Wt) ~ resp_bl + temp_bl + pulse_bl + sao2fio2_bl +
   #                                   crp_bl + alc_bl + dd_bl + gfr_bl +
   #                                   charlson_cat + demo5 + sex + bmi_cat +
@@ -194,6 +195,7 @@ for(k in 1:5){
     jm.tmp <- Yhati
     jv.tmp <- Vi
     
+    #days = 0:20
     nms <- c(paste0('sao2_fio2_ratio_m', '_day',c(0:(length(days)-1))),
              paste0('temp_c_m', '_day',c(0:(length(days)-1))),
              paste0('pulse_m', '_day',c(0:(length(days)-1))))
@@ -204,6 +206,8 @@ for(k in 1:5){
     ## calculate [Yi9,...,Yi19|Yi0,...,Yi1]
     ## if only partially observed, conditioning only on observed Y's
     
+    #i = 2
+    projT = 20
     toMatch.Yit <- paste0('day', c(0:max((i-1),0)), "$")
     inx.Yit <- grep(paste(toMatch.Yit, collapse = "|"),nms)
     toMatch.Yit1ts <- paste0('day', c(max(i,1):(projT)),  "$")
@@ -257,7 +261,8 @@ for(k in 1:5){
       
       mu.Yit1ts.c <- mu.Yit1ts
       var.Yit1ts.c <- var.Yit1ts
-      
+      # look into where this equation comes from
+      # maybe it's bayesian?
       cM <- mu.Yit1ts.c + cov.Yit1ts.Yit.c %*% solve(var.Yit.c) %*% (Yit.c - mu.Yit.c)
       cV <- var.Yit1ts.c - cov.Yit1ts.Yit.c %*% solve(var.Yit.c) %*% cov.Yit.Yit1ts.c
     }else if(sum(!is.na(Yit)) == 0){
@@ -269,6 +274,12 @@ for(k in 1:5){
     set.seed(2021)
     Yfuture.sim <- t(rmvnorm(nsim, cM, cV)) ## interval 8 to interval 19
     
+    # cm is mean
+    # cv is covariance matrix
+    # rmvnorm is simulating future data
+ 
+##### Double check this is for the competing risks model and not more continuous predictions
+#####
     priors.tmp <- list()
     for(v in 1:nsim){
       newdt <- compdt
@@ -532,7 +543,7 @@ for(v in 1:5){
                 grep("pulse_m", colnames(Ri)))
     Ri <- Ri[ord.Ri, ord.Ri]
     
-    Vi = Zi %*% D %*% t(Zi) + Ri
+    Vi = Zi %*% D %*% t(Zi) + Ri # random effects portion
     
     jm.tmp <- Yhati
     jv.tmp <- Vi

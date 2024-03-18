@@ -1,4 +1,6 @@
-wd <- "~/Downloads/covidPrediction_source_code"
+require(here)
+here::i_am("code/00_loadlibs.r")
+wd <- here()
 path_model <- "model/"
 require(nnet)
 require(knitr)

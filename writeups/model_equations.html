@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.450">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Model Equations</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="model_equations_files/libs/clipboard/clipboard.min.js"></script>
+<script src="model_equations_files/libs/quarto-html/quarto.js"></script>
+<script src="model_equations_files/libs/quarto-html/popper.min.js"></script>
+<script src="model_equations_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="model_equations_files/libs/quarto-html/anchor.min.js"></script>
+<link href="model_equations_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="model_equations_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="model_equations_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="model_equations_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="model_equations_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+</head>
+
+<body class="fullcontent">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Model Equations</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<section id="libraries" class="level1">
+<h1>Libraries</h1>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(here)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>here<span class="sc">::</span><span class="fu">i_am</span>(<span class="st">"code/model_equations.qmd"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="prospective-model" class="level1">
+<h1>Prospective Model</h1>
+<p>This model is adapted from <span class="citation" data-cites="wang2022">Wang et al. (<a href="#ref-wang2022" role="doc-biblioref">2022</a>)</span>.</p>
+<section id="biomarker-mixed-effects-model" class="level2">
+<h2 class="anchored" data-anchor-id="biomarker-mixed-effects-model">Biomarker Mixed Effects Model</h2>
+<p><span class="math inline">\([Y_{1:t} | Y_0, X]\)</span></p>
+<p>In our model, we’re focusing on biomarker data, specifically on A1C trajectory. This model will look something like:</p>
+<p><span class="math inline">\(i = 1, ..., N\)</span> represents individual <span class="math inline">\(i\)</span></p>
+<p><span class="math inline">\(t = 1, ..., T_i\)</span> represents day <span class="math inline">\(t\)</span> for time <span class="math inline">\(i\)</span></p>
+<p>Then for the multivariate linear mixed effects model</p>
+<p><span class="math inline">\(Y_i^{(k)} = X_i^{(k)} \beta^{(k)} + Z_i^{(k)} b_i^{(k)} + \epsilon_i^{(k)}\)</span></p>
+<p><span class="math inline">\(Y_i^{(k)}\)</span> is biomarker <span class="math inline">\(k\)</span> for person <span class="math inline">\(i\)</span>. It represents the vector <span class="math inline">\((Y_{it}^{(k)}, t = 1, ..., T_i)\)</span>.</p>
+<ul>
+<li>In our situation, <span class="math inline">\(k\)</span> would be would be BMI, HbA1c %, and GFR.</li>
+</ul>
+<p><span class="math inline">\(X_i^{(k)}\)</span> is the <span class="math inline">\((T_i \times p_i)\)</span> matrix of fixed covariates (such as patient characteristics <span class="math inline">\(p_i\)</span>) at time point <span class="math inline">\(t\)</span>, as well as time (with natural spline with 4 degrees of freedom)</p>
+<ul>
+<li>In our situation, the fixed covariates would be sex, ethnicity, and other time-fixed variables.</li>
+</ul>
+<p><span class="math inline">\(Z_i^{(k)}\)</span> is the <span class="math inline">\((T_i \times q_i)\)</span> matrix of random effect covariates (such as basis functions for biomarker trajectories) and is a subset of <span class="math inline">\(X_i^{(k)}\)</span>.</p>
+<ul>
+<li><span class="math inline">\(Z_i^{(k)}\)</span> are covariates that we want to allow to vary, our “random effects”</li>
+</ul>
+<p><span class="math inline">\(\beta^{(k)}\)</span> represents the parameters for our fixed effects</p>
+<p><span class="math inline">\(b^{(k)}\)</span> represents the parameters of our random effects</p>
+<p>For a single biomarker <span class="math inline">\(k\)</span>, this model looks like</p>
+<span class="math display">\[\begin{bmatrix}
+Y_{i1}^{(k)} \\
+\vdots \\
+Y_{iT_i}^{(k)} \\
+\end{bmatrix}
+
+=
+
+\begin{bmatrix}
+X_{i11}^{(k)} &amp; ... &amp; X_{i1p_{X}}^{(k)} \\
+\vdots &amp; \ddots &amp; \vdots \\
+X_{iT_i1}^{(k)} &amp; ... &amp; X_{i T_i p_{X}}^{(k)} \\
+\end{bmatrix}
+
+\begin{bmatrix}
+\beta_{i1}^{(k)} \\
+\vdots \\
+\beta_{ip_X}^{(k)} \\
+\end{bmatrix}
+
++
+
+\begin{bmatrix}
+Z_{i 1 1}^{(k)} &amp; ... &amp; Z_{i 1 q}^{(k)} \\
+\vdots &amp; \ddots &amp; \vdots \\
+Z_{i T_i 1}^{(k)} &amp; ... &amp; Z_{i T_i q}^{(k)} \\
+\end{bmatrix}
+
+\begin{bmatrix}
+b_{i 1}^{(k)} \\
+\vdots \\
+b_{i q}^{(k)} \\
+\end{bmatrix}
+
++
+
+\begin{bmatrix}
+\epsilon_{i 1}^{(k)} \\
+\vdots \\
+\epsilon_{i T_i}^{(k)} \\
+\end{bmatrix}\]</span>
+</section>
+<section id="biomarker-prediction" class="level2">
+<h2 class="anchored" data-anchor-id="biomarker-prediction">Biomarker Prediction</h2>
+<p><span class="math inline">\([Y_{t+1:T} | Y_{1:t}, X]\)</span></p>
+<p>The future biomarker prediction follows a conditional Gaussian distribution.</p>
+<p>Conditional <span class="math inline">\(Y_{i(t+1:T_i)}\)</span> given observed values <span class="math inline">\(Y_{i(1:t)}\)</span>. Values are then simulated from this distribution to get future biomarker values.</p>
+
+</section>
+</section>
+
+<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" role="doc-bibliography"><h2 class="anchored quarto-appendix-heading">References</h2><div id="refs" class="references csl-bib-body hanging-indent" role="list">
+<div id="ref-wang2022" class="csl-entry" role="listitem">
+Wang, Zitong, Mary Grace Bowring, Antony Rosen, Brian Garibaldi, Scott Zeger, and Akihiko Nishimura. 2022. <span>“Learning and Predicting from Dynamic Models for COVID-19 Patient Monitoring.”</span> <em>Statistical Science</em> 37 (2). <a href="https://doi.org/10.1214/22-STS861">https://doi.org/10.1214/22-STS861</a>.
+</div>
+</div></section></div></main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>

@@ -1,0 +1,105 @@
+---
+title: "Model Equations"
+format: html
+editor: visual
+bibliography: references.bib
+---
+
+# Libraries
+
+```{r message=FALSE}
+library(tidyverse)
+library(here)
+here::i_am("code/model_equations.qmd")
+```
+
+# Prospective Model
+
+This model is adapted from @wang2022.
+
+## Biomarker Mixed Effects Model
+
+$[Y_{1:t} | Y_0, X]$
+
+In our model, we're focusing on biomarker data, specifically on A1C trajectory. This model will look something like:
+
+$i = 1, ..., N$ represents individual $i$
+
+$t = 1, ..., T_i$ represents day $t$ for time $i$
+
+Then for the multivariate linear mixed effects model
+
+$Y_i^{(k)} = X_i^{(k)} \beta^{(k)} + Z_i^{(k)} b_i^{(k)} + \epsilon_i^{(k)}$
+
+$Y_i^{(k)}$ is biomarker $k$ for person $i$. It represents the vector $(Y_{it}^{(k)}, t = 1, ..., T_i)$.
+
+-   In our situation, $k$ would be would be BMI, HbA1c %, and GFR.
+
+$X_i^{(k)}$ is the $(T_i \times p_i)$ matrix of fixed covariates (such as patient characteristics $p_i$) at time point $t$, as well as time (with natural spline with 4 degrees of freedom)
+
+-   In our situation, the fixed covariates would be sex, ethnicity, and other time-fixed variables.
+
+$Z_i^{(k)}$ is the $(T_i \times q_i)$ matrix of random effect covariates (such as basis functions for biomarker trajectories) and is a subset of $X_i^{(k)}$.
+
+-   $Z_i^{(k)}$ are covariates that we want to allow to vary, our "random effects"
+
+$\beta^{(k)}$ represents the parameters for our fixed effects
+
+$b^{(k)}$ represents the parameters of our random effects
+
+For a single biomarker $k$, this model looks like
+
+```{=tex}
+\begin{bmatrix}
+Y_{i1}^{(k)} \\
+\vdots \\
+Y_{iT_i}^{(k)} \\
+\end{bmatrix}
+
+=
+
+\begin{bmatrix}
+X_{i11}^{(k)} & ... & X_{i1p_{X}}^{(k)} \\
+\vdots & \ddots & \vdots \\
+X_{iT_i1}^{(k)} & ... & X_{i T_i p_{X}}^{(k)} \\
+\end{bmatrix}
+
+\begin{bmatrix}
+\beta_{i1}^{(k)} \\
+\vdots \\
+\beta_{ip_X}^{(k)} \\
+\end{bmatrix}
+
++
+
+\begin{bmatrix}
+Z_{i 1 1}^{(k)} & ... & Z_{i 1 q}^{(k)} \\
+\vdots & \ddots & \vdots \\
+Z_{i T_i 1}^{(k)} & ... & Z_{i T_i q}^{(k)} \\
+\end{bmatrix}
+
+\begin{bmatrix}
+b_{i 1}^{(k)} \\
+\vdots \\
+b_{i q}^{(k)} \\
+\end{bmatrix}
+
++
+
+\begin{bmatrix}
+\epsilon_{i 1}^{(k)} \\
+\vdots \\
+\epsilon_{i T_i}^{(k)} \\
+\end{bmatrix}
+```
+
+## Biomarker Prediction
+
+$[Y_{t+1:T} | Y_{1:t}, X]$
+
+The future biomarker prediction follows a conditional Gaussian distribution.
+
+Conditional $Y_{i(t+1:T_i)}$ given observed values $Y_{i(1:t)}$. Values are then simulated from this distribution to get future biomarker values.
+
+$E[Y_{i(t+1:T_i)} | Y_{i(1:t)}]$
+
